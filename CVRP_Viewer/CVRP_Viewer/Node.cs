@@ -65,12 +65,19 @@ namespace CVRP_Viewer
             return node;
         }
 
-        public static bool operator ==(Node left, Node right) => left.Equals(right);
+        /*public static bool operator ==(Node left, Node right) => left.Equals(right);
         public static bool operator !=(Node left, Node right) => !left.Equals(right);
 
         public override bool Equals(object obj)
         {
-            return Position.Equals(((Node)obj).Position);
-        }
+            if (obj != null)
+            {
+                return Position.Equals(((Node)obj).Position);
+            }
+            else
+            {
+                return base.Equals(obj);
+            }
+        }*/
     }
 }

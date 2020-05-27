@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -131,9 +132,206 @@ namespace CVRP_Viewer
             Console.WriteLine("Total cost = " + totalCost);
         }
 
+        private void Rollback(int truck, Node previous, Node node)
+        {
+            trucks[truck].AddNodeAfter(previous, node);
+        }
+
+        private void ApplyMovement(Movement movement)
+        {
+            trucks[movement.OriginalTruck].RemoveNode(movement.Node, movement.NbNodes);
+
+            trucks[movement.NewTruck].AddNodeAfter(movement.NewPrevious, movement.Node);
+        }
+
+        private int TotalCost()
+        {
+            int sum = 0;
+
+            foreach (Truck truck in trucks)
+            {
+                sum += truck.CalcCost();
+            }
+
+            return sum;
+        }
+
+        private int FindTruck(Node node)
+        {
+            for (int i = 0; i < trucks.Count; i++)
+            {
+                if (trucks[i].IsNodeInRoute(node))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
-            
+            for (int i = 0; i < depotManager.NbClients; i++)
+            {
+                if (i != depotManager.DepotIndex)
+                {
+                    Node node = depotManager.GetClient(i);
+
+                    Truck currentTruck = trucks[FindTruck(node)];
+
+                    Node previous = currentTruck.GetPreviousNode(node);
+
+                    List<Movement> movements = new List<Movement>();
+
+                    // Calculate cost of route before we remove the node
+                    int beforeRemoval = currentTruck.CalcCost();
+
+                    currentTruck.RemoveNode(node, 1);
+
+                    // Calculate cost of route after we removed the node
+                    int afterRemoval = currentTruck.CalcCost();
+
+                    for (int j = 0; j < trucks.Count; j++)
+                    {
+                        Truck newTruck = trucks[j];
+
+                        int oldCost = beforeRemoval + newTruck.CalcCost();
+
+                        Node tmp = newTruck.Head;
+
+                        do
+                        {
+                            Movement movement = new Movement
+                            {
+                                NbNodes = 1,
+                                Node = node,
+                                OriginalPrevious = previous,
+                                OriginalTruck = i,
+                                NewPrevious = tmp,
+                                NewTruck = j
+                            };
+
+                            newTruck.AddNodeAfter(tmp, node);
+
+                            int newCost = afterRemoval + newTruck.CalcCost();
+
+                            movement.Cost = newCost - oldCost;
+
+                            // We add the movement only if we save money
+                            if (movement.Cost < 0)
+                            {
+                                if (movement.OriginalTruck == movement.NewTruck)
+                                {
+                                    movement.Cost /= 2;
+                                }
+
+                                movements.Add(movement);
+                            }
+
+                            newTruck.RemoveNode(node, 1);
+
+                            tmp++;
+                        } while (tmp != newTruck.Head);
+                    }
+
+                    Rollback(i, previous, node);
+
+                    movements.Sort();
+
+                    if (movements.Count > 0)
+                    {
+                        ApplyMovement(movements[0]);
+                    }
+                    Refresh();
+
+                    Console.WriteLine($"{i} : {TotalCost()}");
+                }
+            }
+
+            /*for (int i = 0; i < trucks.Count; i++)
+            {
+                Truck currentTruck = trucks[i];
+
+                Node previous = currentTruck.Head;
+
+                for (Node node = previous.Next; node != currentTruck.Head; previous++)
+                {
+                    node = previous.Next;
+
+                    if (previous == node)
+                    {
+                        trucks.RemoveAt(i);
+                        i--;
+
+                        continue;
+                    }
+
+                    List<Movement> movements = new List<Movement>();
+
+                    // Calculate cost of route before we remove the node
+                    int beforeRemoval = currentTruck.CalcCost();
+
+                    currentTruck.RemoveNode(node, 1);
+
+                    // Calculate cost of route after we removed the node
+                    int afterRemoval = currentTruck.CalcCost();
+
+                    for (int j = 0; j < trucks.Count; j++)
+                    {
+                        Truck newTruck = trucks[j];
+
+                        int oldCost = beforeRemoval + newTruck.CalcCost();
+
+                        Node tmp = newTruck.Head;
+
+                        do
+                        {
+                            Movement movement = new Movement
+                            {
+                                NbNodes = 1,
+                                Node = node,
+                                OriginalPrevious = previous,
+                                OriginalTruck = i,
+                                NewPrevious = tmp,
+                                NewTruck = j
+                            };
+
+                            newTruck.AddNodeAfter(tmp, node);
+
+                            int newCost = afterRemoval + newTruck.CalcCost();
+
+                            movement.Cost = newCost - oldCost;
+
+                            // We add the movement only if we save money
+                            if (movement.Cost < 0)
+                            {
+                                if (movement.OriginalTruck == movement.NewTruck)
+                                {
+                                    movement.Cost /= 2;
+                                }
+
+                                movements.Add(movement);
+                            }
+
+                            newTruck.RemoveNode(node, 1);
+
+                            tmp++;
+                        } while (tmp != newTruck.Head);
+                    }
+
+                    Rollback(i, previous, node);
+
+                    movements.Sort();
+
+                    if (movements.Count > 0)
+                    {
+                        ApplyMovement(movements[0]);
+                    }
+                    Refresh();
+
+                    Console.WriteLine($"{i} : {TotalCost()}");
+                }
+            }*/
         }
     }
 }

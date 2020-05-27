@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace CVRP_Viewer
@@ -82,6 +83,36 @@ namespace CVRP_Viewer
             }
 
             return totalCost;
+        }
+
+        public bool IsNodeInRoute(Node node)
+        {
+            for (Node n = Head.Next; n != Head; n++)
+            {
+                if (n == node)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Node GetPreviousNode(Node node)
+        {
+            Node previous = Head;
+
+            do
+            {
+                if (previous.Next == node)
+                {
+                    return previous;
+                }
+
+                previous++;
+            } while (previous != Head);
+
+            throw new System.Exception("The node requested is not in this route");
         }
 
         public void Paint(object sender, PaintEventArgs e)
