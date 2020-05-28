@@ -28,37 +28,9 @@ namespace CVRP_Viewer
 
             depotManager = dataImporter.GetManager();
 
-            // Create list of trucks with a predetermined capacity
-            trucks = new List<Truck>(depotManager.NbClients / 3);
+            CreateRandomRoutes();
 
-            // Copy clients into a list so we can remove them once used
-            List<Node> clients = new List<Node>(depotManager.Clients);
-
-            // Delete depot from list
-            clients.RemoveAt(depotManager.DepotIndex);
-
-            Random rnd = new Random();
-
-            for (int i = 0; i < trucks.Capacity; i++)
-            {
-                // Create truck with the depot as the head
-                Truck truck = new Truck(depotManager.Depot);
-
-                // Calculate how many clients are going to be in the truck's initiale route
-                int clientsForTruck = clients.Count / (trucks.Capacity - trucks.Count);
-
-                // Add clients to truck route and remove them from clients list
-                for (int j = 0; j < clientsForTruck; j++)
-                {
-                    int randIndex = rnd.Next(clients.Count);
-                    truck.AddNodeAfter(truck.Head, clients[randIndex]);
-                    clients.RemoveAt(randIndex);
-                }
-
-                Paint += truck.Paint;
-
-                trucks.Add(truck);
-            }
+            //ShowOptRoute();
         }
 
         private void frmMain_Paint(object sender, PaintEventArgs e)
@@ -84,8 +56,52 @@ namespace CVRP_Viewer
             }
         }
 
-        public void ShowOptRoute(Graphics g)
+        private void CreateRandomRoutes()
         {
+            // Create list of trucks with a predetermined capacity
+            trucks = new List<Truck>(depotManager.NbClients / 3);
+
+            // Copy clients into a list so we can remove them once used
+            List<Node> clients = new List<Node>(depotManager.Clients);
+
+            // Delete depot from list
+            clients.RemoveAt(depotManager.DepotIndex);
+
+            Random rnd = new Random();
+
+            for (int i = 0; i < trucks.Capacity; i++)
+            {
+                // Create truck with the depot as the head
+                Truck truck = new Truck(depotManager.Depot);
+
+                // Calculate how many clients are going to be in the truck's initiale route
+                int clientsForTruck = clients.Count / (trucks.Capacity - trucks.Count);
+
+                // Add clients to truck route and remove them from clients list
+                for (int j = 0; j < clientsForTruck; j++)
+                {
+                    int randIndex = rnd.Next(clients.Count);
+                    if (truck.CalcCapacity() + clients[randIndex].Demande <= Truck.Capacity)
+                    {
+                        truck.AddNodeAfter(truck.Head, clients[randIndex]);
+                        clients.RemoveAt(randIndex);
+                    }
+                    else
+                    {
+                        j--;
+                    }
+                }
+
+                Paint += truck.Paint;
+
+                trucks.Add(truck);
+            }
+        }
+
+        public void ShowOptRoute()
+        {
+            trucks = new List<Truck>();
+
             List<int[]> locations = new List<int[]>();
 
             int[] tmp1 = { 7, 25, 35, 16 };
@@ -106,30 +122,23 @@ namespace CVRP_Viewer
             int[] tmp6 = { 20, 8, 5, 3, 1, 34, 17 };
             locations.Add(tmp6);
 
-            int totalCost = 0;
-
             Node depot = depotManager.Depot;
 
             foreach (int[] tmp in locations)
             {
-                int routeCost = depot.CalcDistance(depotManager.GetClient(tmp[0]));
-                routeCost += depot.CalcDistance(depotManager.GetClient(tmp[tmp.Length - 1]));
+                Truck truck = new Truck(depot);
 
-                for (int i = 0; i < tmp.Length - 1; i++)
+                for (int i = tmp.Length - 1; i >= 0; i--)
                 {
-                    Node from = depotManager.GetClient(tmp[i]);
-                    Node to = depotManager.GetClient(tmp[i + 1]);
-
-                    routeCost += from.CalcDistance(to);
-
-                    g.DrawLine(Pens.Black, from.Position.X * 4, from.Position.Y * 4, to.Position.X * 4, to.Position.Y * 4);
+                    truck.AddNodeAfter(truck.Head, depotManager.GetClient(tmp[i]));
                 }
 
-                totalCost += routeCost;
-                Console.WriteLine("Route cost = " + routeCost);
+                Paint += truck.Paint;
+
+                trucks.Add(truck);
             }
 
-            Console.WriteLine("Total cost = " + totalCost);
+            Console.WriteLine(TotalCost());
         }
 
         private void Rollback(int truck, Node previous, Node node)
@@ -156,6 +165,11 @@ namespace CVRP_Viewer
             return sum;
         }
 
+        /// <summary>
+        /// Searches all trucks for the given node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         private int FindTruck(Node node)
         {
             for (int i = 0; i < trucks.Count; i++)
@@ -175,10 +189,14 @@ namespace CVRP_Viewer
             {
                 if (i != depotManager.DepotIndex)
                 {
+                    // Get Node
                     Node node = depotManager.GetClient(i);
 
-                    Truck currentTruck = trucks[FindTruck(node)];
+                    // Find truck index of node
+                    int truckIndex = FindTruck(node);
+                    Truck currentTruck = trucks[truckIndex];
 
+                    // Find the node that comes before the current one in the trucks route
                     Node previous = currentTruck.GetPreviousNode(node);
 
                     List<Movement> movements = new List<Movement>();
@@ -195,6 +213,14 @@ namespace CVRP_Viewer
                     {
                         Truck newTruck = trucks[j];
 
+                        int truckCapacity = newTruck.CalcCapacity();
+
+                        // if truck doesn't have enough room for the node, then skip this truck
+                        if (truckCapacity + node.Demande > Truck.Capacity)
+                        {
+                            continue;
+                        }
+
                         int oldCost = beforeRemoval + newTruck.CalcCost();
 
                         Node tmp = newTruck.Head;
@@ -206,7 +232,7 @@ namespace CVRP_Viewer
                                 NbNodes = 1,
                                 Node = node,
                                 OriginalPrevious = previous,
-                                OriginalTruck = i,
+                                OriginalTruck = truckIndex,
                                 NewPrevious = tmp,
                                 NewTruck = j
                             };
@@ -234,7 +260,7 @@ namespace CVRP_Viewer
                         } while (tmp != newTruck.Head);
                     }
 
-                    Rollback(i, previous, node);
+                    Rollback(truckIndex, previous, node);
 
                     movements.Sort();
 

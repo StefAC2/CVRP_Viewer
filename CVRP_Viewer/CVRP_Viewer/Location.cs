@@ -10,6 +10,11 @@
             this.Y = y;
         }
 
+        public override string ToString()
+        {
+            return $"({X,3}, {Y,3})";
+        }
+
         public override bool Equals(object obj)
         {
             Location other = obj as Location;

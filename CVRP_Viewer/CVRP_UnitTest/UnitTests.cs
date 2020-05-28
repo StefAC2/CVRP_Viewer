@@ -120,18 +120,14 @@ namespace CVRP_UnitTest
 
             foreach (int[] tmp in locations)
             {
-                int routeCost = depot.CalcDistance(dm.GetClient(tmp[0]));
-                routeCost += depot.CalcDistance(dm.GetClient(tmp[^1]));
+                Truck truck = new Truck(depot);
 
-                for (int i = 0; i < tmp.Length - 1; i++)
+                for (int i = tmp.Length - 1; i >= 0; i--)
                 {
-                    Node from = dm.GetClient(tmp[i]);
-                    Node to = dm.GetClient(tmp[i + 1]);
-
-                    routeCost += from.CalcDistance(to);
+                    truck.AddNodeAfter(truck.Head, dm.GetClient(tmp[i]));
                 }
 
-                totalCost += routeCost;
+                totalCost += truck.CalcCost();
             }
 
             // Assert

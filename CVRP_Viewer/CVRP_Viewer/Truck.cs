@@ -74,13 +74,13 @@ namespace CVRP_Viewer
 
             int totalCost = 0;
 
-            while (tmp != Head)
+            do
             {
                 totalCost += previous.CalcDistance(tmp);
 
                 previous = tmp;
                 tmp = previous.Next;
-            }
+            } while (previous != Head);
 
             return totalCost;
         }

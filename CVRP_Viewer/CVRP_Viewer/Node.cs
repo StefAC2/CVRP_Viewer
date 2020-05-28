@@ -4,9 +4,6 @@ namespace CVRP_Viewer
 {
     public class Node
     {
-        // Fields
-        int amp = 4;
-
         // Properties
         public Location Position, DrawPos;
         public int Demande;
@@ -16,7 +13,10 @@ namespace CVRP_Viewer
         public Node(Location pos, int demande)
         {
             this.Position = pos;
+
+            int amp = 4;
             this.DrawPos = new Location(pos.X * amp, pos.Y * amp);
+ 
             this.Demande = demande;
         }
 
@@ -26,7 +26,7 @@ namespace CVRP_Viewer
 
         public override string ToString()
         {
-            return $"Position: ({Position.X,3},{Position.Y,3}); Capacity: {Demande,3}";
+            return $"Position: {Position}; Demande: {Demande,3}";
         }
 
         public int CalcDistance(Node other)
