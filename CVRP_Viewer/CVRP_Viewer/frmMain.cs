@@ -153,9 +153,9 @@ namespace CVRP_Viewer
 
         private void ApplyMovement(Movement movement)
         {
-            trucks[movement.OriginalTruck].RemoveNode(movement.Node, movement.NbNodes);
+            trucks[movement.OriginalTruck].RemoveNode(movement.Nodes[0], movement.NbNodes);
 
-            trucks[movement.NewTruck].AddNodeAfter(movement.NewPrevious, movement.Node);
+            trucks[movement.NewTruck].AddNodeAfter(movement.NewPrevious, movement.Nodes);
         }
 
         private int TotalCost()
@@ -232,7 +232,7 @@ namespace CVRP_Viewer
                             Movement movement = new Movement
                             {
                                 NbNodes = 1,
-                                Node = node,
+                                Nodes = new[] { node },
                                 OriginalPrevious = previous,
                                 OriginalTruck = truckIndex,
                                 NewPrevious = tmp,
@@ -281,10 +281,12 @@ namespace CVRP_Viewer
         {
             //AlgoWith1();
 
-            int totalCost = TotalCost(), oldTotalCost = 0;
-
-            for (int nb = 2; nb > 0; nb--)
+            for (int nb = 3; nb > 0; nb--)
             {
+                Console.WriteLine("--------------------- Zone : " + nb);
+                
+                int totalCost = TotalCost(), oldTotalCost = 0;
+
                 while (totalCost != oldTotalCost)
                 {
                     oldTotalCost = totalCost;
@@ -352,7 +354,7 @@ namespace CVRP_Viewer
                                     Movement movement = new Movement
                                     {
                                         NbNodes = nodes.Count,
-                                        Node = nodes[0],
+                                        Nodes = nodes.ToArray(),
                                         OriginalPrevious = previous,
                                         OriginalTruck = truckIndex,
                                         NewPrevious = tmp,
@@ -392,7 +394,7 @@ namespace CVRP_Viewer
                                 ApplyMovement(movements[0]);
                             }
                             Refresh();
-
+                            
                             Console.WriteLine($"{i} : {TotalCost()}");
                         }
                     }
