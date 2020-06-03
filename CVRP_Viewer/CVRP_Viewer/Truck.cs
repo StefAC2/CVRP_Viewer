@@ -12,9 +12,9 @@ namespace CVRP_Viewer
         public Node Head;
 
         // Constructors
-        public Truck(Node head)
+        public Truck(Node head, int truckId)
         {
-            this.Head = new Node(head.Position);
+            this.Head = new DepotNode(head.Position, truckId);
             this.Head.Next = this.Head;
         }
 
@@ -30,6 +30,14 @@ namespace CVRP_Viewer
             previous.Next = node;
         }
 
+        public void AddNodeAfter(Node previous, Node[] nodes)
+        {
+            for (int i = nodes.Length - 1; i >= 0; i--)
+            {
+                AddNodeAfter(previous, nodes[i]);
+            }
+        }
+
         /// <summary>
         /// Removes node
         /// </summary>
@@ -40,13 +48,15 @@ namespace CVRP_Viewer
             Node previous = Head;
             Node tmp = previous.Next;
 
-            while (tmp != Head)
+            while (tmp.Position != Head.Position)
             {
                 if (tmp == node)
                 {
-                    tmp += nbNodes;
+                    tmp += nbNodes - 1;
 
-                    previous.Next = tmp;
+                    previous.Next = tmp.Next;
+
+                    tmp.Next = null;
                     break;
                 }
 
@@ -59,7 +69,7 @@ namespace CVRP_Viewer
         {
             int demandeSum = 0;
 
-            for (Node n = Head.Next; n != Head; n++)
+            for (Node n = Head.Next; n.Position != Head.Position; n++)
             {
                 demandeSum += n.Demande;
             }
@@ -80,7 +90,7 @@ namespace CVRP_Viewer
 
                 previous = tmp;
                 tmp = previous.Next;
-            } while (previous != Head);
+            } while (previous.Position != Head.Position);
 
             return totalCost;
         }
@@ -110,9 +120,11 @@ namespace CVRP_Viewer
                 }
 
                 previous++;
-            } while (previous != Head);
+            } while (previous.Position != Head.Position);
 
-            throw new System.Exception("The node requested is not in this route");
+            return null;
+
+            //throw new System.Exception("The node requested is not in this route");
         }
 
         public void Paint(object sender, PaintEventArgs e)
@@ -121,24 +133,6 @@ namespace CVRP_Viewer
             {
                 e.Graphics.DrawLine(Pens.Black, n.DrawPos.X, n.DrawPos.Y, n.Next.DrawPos.X, n.Next.DrawPos.Y);
             }
-        }
-
-        public Truck Clone()
-        {
-            Truck truck = new Truck(this.Head.Clone());
-
-            Node previous = truck.Head;
-
-            for (Node n = this.Head.Next; n != this.Head; n++)
-            {
-                Node clone = n.Clone();
-
-                truck.AddNodeAfter(previous, clone);
-
-                previous = clone;
-            }
-
-            return truck;
         }
     }
 }

@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="DataImporter.cs" />
     <Compile Include="DepotManager.cs" />
+    <Compile Include="DepotNode.cs" />
     <Compile Include="frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +73,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="DiagramDesClasses.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
