@@ -120,7 +120,7 @@ namespace CVRP_UnitTest
 
             foreach (int[] tmp in locations)
             {
-                Truck truck = new Truck(depot);
+                Truck truck = new Truck(depot, 0);
 
                 for (int i = tmp.Length - 1; i >= 0; i--)
                 {

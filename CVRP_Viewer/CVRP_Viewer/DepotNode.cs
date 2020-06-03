@@ -2,9 +2,11 @@
 {
     public class DepotNode : Node
     {
+        // Properties
         public int TruckId;
 
-        public DepotNode(Location pos, int truckId) : base(pos)
+        // Constructor
+        public DepotNode(Location pos, int index, int truckId) : base(pos, index)
         {
             TruckId = truckId;
         }

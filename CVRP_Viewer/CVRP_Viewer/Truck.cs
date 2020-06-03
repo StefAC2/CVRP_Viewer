@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace CVRP_Viewer
@@ -11,11 +10,12 @@ namespace CVRP_Viewer
         // Properties
         public Node Head;
 
-        // Constructors
+        // Constructor
         public Truck(Node head, int truckId)
         {
-            this.Head = new DepotNode(head.Position, truckId);
+            this.Head = new DepotNode(head.Position, head.Index, truckId);
             this.Head.Next = this.Head;
+            this.Head.Previous = this.Head;
         }
 
         // Methodes
@@ -27,15 +27,19 @@ namespace CVRP_Viewer
         public void AddNodeAfter(Node previous, Node node)
         {
             node.Next = previous.Next;
+            node.Next.Previous = node;
+            node.Previous = previous;
             previous.Next = node;
         }
 
         public void AddNodeAfter(Node previous, Node[] nodes)
         {
-            for (int i = nodes.Length - 1; i >= 0; i--)
-            {
-                AddNodeAfter(previous, nodes[i]);
-            }
+            Node first = nodes[0], last = nodes[nodes.Length - 1];
+
+            last.Next = previous.Next;
+            last.Next.Previous = last;
+            first.Previous = previous;
+            previous.Next = first;
         }
 
         /// <summary>
@@ -45,24 +49,11 @@ namespace CVRP_Viewer
         /// <param name="nbNodes">Number of nodes to remove</param>
         public void RemoveNode(Node node, int nbNodes)
         {
-            Node previous = Head;
-            Node tmp = previous.Next;
+            Node previous = node.Previous;
+            Node next = node + nbNodes;
 
-            while (tmp.Position != Head.Position)
-            {
-                if (tmp == node)
-                {
-                    tmp += nbNodes - 1;
-
-                    previous.Next = tmp.Next;
-
-                    tmp.Next = null;
-                    break;
-                }
-
-                previous = tmp;
-                tmp = previous.Next;
-            }
+            previous.Next = next;
+            next.Previous = previous;
         }
 
         public int CalcCapacity()
@@ -79,18 +70,16 @@ namespace CVRP_Viewer
 
         public int CalcCost()
         {
-            Node previous = Head;
-            Node tmp = previous.Next;
+            Node node = Head;
 
             int totalCost = 0;
 
             do
             {
-                totalCost += previous.CalcDistance(tmp);
+                totalCost += node.CalcDistance(node.Next);
 
-                previous = tmp;
-                tmp = previous.Next;
-            } while (previous.Position != Head.Position);
+                node++;
+            } while (node.Position != Head.Position);
 
             return totalCost;
         }
@@ -106,25 +95,6 @@ namespace CVRP_Viewer
             }
 
             return false;
-        }
-
-        public Node GetPreviousNode(Node node)
-        {
-            Node previous = Head;
-
-            do
-            {
-                if (previous.Next == node)
-                {
-                    return previous;
-                }
-
-                previous++;
-            } while (previous.Position != Head.Position);
-
-            return null;
-
-            //throw new System.Exception("The node requested is not in this route");
         }
 
         public void Paint(object sender, PaintEventArgs e)

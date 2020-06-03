@@ -2,14 +2,17 @@
 {
     public class Location
     {
+        // Properties
         public int X, Y;
 
+        // Constructor
         public Location(int x, int y)
         {
             this.X = x;
             this.Y = y;
         }
 
+        // Methodes
         public override string ToString()
         {
             return $"({X,3}, {Y,3})";

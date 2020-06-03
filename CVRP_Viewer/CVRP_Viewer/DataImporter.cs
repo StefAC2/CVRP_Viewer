@@ -73,7 +73,7 @@ namespace CVRP_Viewer
                         {
                             Location pos = new Location(int.Parse(data[1]), int.Parse(data[2]));
 
-                            DepotManager.AddClient(num, new Node(pos));
+                            DepotManager.AddClient(num, new Node(pos, num));
                         }
 
                         if (isDemandSection)
@@ -109,7 +109,7 @@ namespace CVRP_Viewer
 
                 int demande = int.Parse(data[7]);
 
-                DepotManager.AddClient(index, new Node(pos, demande));
+                DepotManager.AddClient(index, new Node(pos, index, demande));
             }
 
             DepotManager.DeclareDepot(0);

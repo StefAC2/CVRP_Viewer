@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace CVRP_Viewer
+﻿namespace CVRP_Viewer
 {
     public class DepotManager
     {

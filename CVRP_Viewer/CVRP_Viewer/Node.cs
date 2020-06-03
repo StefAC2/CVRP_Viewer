@@ -6,11 +6,11 @@ namespace CVRP_Viewer
     {
         // Properties
         public Location Position, DrawPos;
-        public int Demande;
-        public Node Next;
+        public int Demande, Index;
+        public Node Next, Previous;
 
         // Constructors
-        public Node(Location pos, int demande)
+        public Node(Location pos, int index, int demande)
         {
             this.Position = pos;
 
@@ -18,9 +18,10 @@ namespace CVRP_Viewer
             this.DrawPos = new Location(pos.X * amp, pos.Y * amp);
  
             this.Demande = demande;
+            this.Index = index;
         }
 
-        public Node(Location pos) : this(pos, 0) { }
+        public Node(Location pos, int index) : this(pos, index, 0) { }
 
         // Methodes
         public override string ToString()
