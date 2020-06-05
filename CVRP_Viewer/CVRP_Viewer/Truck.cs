@@ -45,12 +45,12 @@ namespace CVRP_Viewer
         /// <summary>
         /// Removes node
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="nodes"></param>
         /// <param name="nbNodes">Number of nodes to remove</param>
-        public void RemoveNode(Node node, int nbNodes)
+        public void RemoveNode(Node[] nodes)
         {
-            Node previous = node.Previous;
-            Node next = node + nbNodes;
+            Node previous = nodes[0].Previous;
+            Node next = nodes[0] + nodes.Length;
 
             previous.Next = next;
             next.Previous = previous;

@@ -28,37 +28,56 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btnRestart = new System.Windows.Forms.Button();
+            this.btnSolve = new System.Windows.Forms.Button();
+            this.btnChooseFile = new System.Windows.Forms.Button();
+            this.ofd = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
-            // btnRestart
+            // btnSolve
             // 
-            this.btnRestart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRestart.Location = new System.Drawing.Point(380, 415);
-            this.btnRestart.Name = "btnRestart";
-            this.btnRestart.Size = new System.Drawing.Size(75, 23);
-            this.btnRestart.TabIndex = 0;
-            this.btnRestart.Text = "Start";
-            this.btnRestart.UseVisualStyleBackColor = true;
-            this.btnRestart.Click += new System.EventHandler(this.btnRestart_Click);
+            this.btnSolve.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSolve.Location = new System.Drawing.Point(380, 415);
+            this.btnSolve.Name = "btnSolve";
+            this.btnSolve.Size = new System.Drawing.Size(75, 23);
+            this.btnSolve.TabIndex = 0;
+            this.btnSolve.Text = "Solve";
+            this.btnSolve.UseVisualStyleBackColor = true;
+            this.btnSolve.Click += new System.EventHandler(this.btnSolve_Click);
+            // 
+            // btnChooseFile
+            // 
+            this.btnChooseFile.Location = new System.Drawing.Point(299, 415);
+            this.btnChooseFile.Name = "btnChooseFile";
+            this.btnChooseFile.Size = new System.Drawing.Size(75, 23);
+            this.btnChooseFile.TabIndex = 1;
+            this.btnChooseFile.Text = "Choose file";
+            this.btnChooseFile.UseVisualStyleBackColor = true;
+            this.btnChooseFile.Click += new System.EventHandler(this.btnChooseFile_Click);
+            // 
+            // ofd
+            // 
+            this.ofd.FileName = "dataFile";
+            this.ofd.Filter = "Data files (*.vrp;*.dat)|*.vrp;*.dat";
             // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(467, 450);
-            this.Controls.Add(this.btnRestart);
+            this.Controls.Add(this.btnChooseFile);
+            this.Controls.Add(this.btnSolve);
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CVRP Viewer";
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.frmMain_Paint);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.Button btnRestart;
+        private System.Windows.Forms.Button btnSolve;
+        private System.Windows.Forms.Button btnChooseFile;
+        private System.Windows.Forms.OpenFileDialog ofd;
     }
 }
 

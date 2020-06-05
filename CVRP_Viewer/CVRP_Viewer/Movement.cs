@@ -5,8 +5,8 @@ namespace CVRP_Viewer
     public class Movement : IComparable<Movement>
     {
         // Properties
-        public int Cost, NbNodes, OriginalTruck, NewTruck;
-        public Node OriginalPrevious, NewPrevious;
+        public int Cost, OriginalTruck, NewTruck;
+        public Node NewPrevious;
         public Node[] Nodes;
 
         // Methode

@@ -1,5 +1,6 @@
 using CVRP_Viewer;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace CVRP_UnitTest
@@ -132,6 +133,42 @@ namespace CVRP_UnitTest
 
             // Assert
             Assert.AreEqual(949, totalCost);
+        }
+
+        [Test]
+        public void RollbackTest()
+        {
+            // Arrange
+            DepotManager dm = new DepotManager(6);
+
+            // Act
+            Random r = new Random();
+            for (int i = 0; i < 6; i++)
+            {
+                dm.AddClient(new Node(new Location(r.Next(100), r.Next(100)), i));
+            }
+
+            dm.DeclareDepot(0);
+            dm.CreateRandomRoutes();
+
+            int oldCost = dm.TotalCost();
+
+            Movement m = new Movement
+            {
+                Nodes = new[] { dm.trucks[0].Head.Next },
+                OriginalTruck = 0
+            };
+
+            Node previous = m.Nodes[0].Previous;
+
+            dm.trucks[0].RemoveNode(m.Nodes);
+
+            dm.Rollback(m.OriginalTruck, previous, m.Nodes);
+
+            int newCost = dm.TotalCost();
+
+            // Assert
+            Assert.AreEqual(oldCost, newCost);
         }
     }
 }

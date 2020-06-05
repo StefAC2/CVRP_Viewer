@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -8,7 +9,7 @@ namespace CVRP_Viewer
     public class DepotManager
     {
         // Properties
-        public Node[] Clients;
+        private Node[] Clients;
 
         public Node Depot => Clients[DepotIndex];
         public int DepotIndex;
@@ -23,9 +24,9 @@ namespace CVRP_Viewer
         }
 
         // Methodes
-        public void AddClient(int index, Node client)
+        public void AddClient(Node client)
         {
-            Clients[index] = client;
+            Clients[client.Index] = client;
         }
 
         public Node GetClient(int index)
@@ -107,6 +108,8 @@ namespace CVRP_Viewer
                 {
                     oldTotalCost = totalCost;
 
+                    List<Movement> movements = new List<Movement>();
+
                     for (int i = 0; i < NbClients; i++)
                     {
                         if (i != DepotIndex)
@@ -138,15 +141,20 @@ namespace CVRP_Viewer
                             // Find the node that comes before the current one in the trucks route
                             Node previous = nodes[0].Previous;
 
-                            List<Movement> movements = new List<Movement>();
-
                             // Calculate cost of route before we remove the node
                             int beforeRemoval = currentTruck.CalcCost();
 
-                            currentTruck.RemoveNode(nodes[0], nodes.Count);
+                            currentTruck.RemoveNode(nodes.ToArray());
 
                             // Calculate cost of route after we removed the node
                             int afterRemoval = currentTruck.CalcCost();
+
+                            Movement movement = new Movement
+                            {
+                                Nodes = nodes.ToArray(),
+                                OriginalTruck = truckIndex,
+                                Cost = int.MaxValue
+                            };
 
                             for (int j = 0; j < trucks.Count; j++)
                             {
@@ -167,51 +175,46 @@ namespace CVRP_Viewer
 
                                 do
                                 {
-                                    Movement movement = new Movement
-                                    {
-                                        NbNodes = nodes.Count,
-                                        Nodes = nodes.ToArray(),
-                                        OriginalPrevious = previous,
-                                        OriginalTruck = truckIndex,
-                                        NewPrevious = tmp,
-                                        NewTruck = j
-                                    };
-
                                     newTruck.AddNodeAfter(tmp, nodes.ToArray());
 
                                     int newCost = afterRemoval + newTruck.CalcCost();
 
                                     // Calculate the difference in cost before and after modifications
-                                    movement.Cost = newCost - oldCost;
+                                    int cost = newCost - oldCost;
 
-                                    // We add the movement only if we save money
-                                    if (movement.Cost < 0)
+                                    if (movement.OriginalTruck == j)
                                     {
-                                        if (movement.OriginalTruck == movement.NewTruck)
-                                        {
-                                            movement.Cost /= 2;
-                                        }
-
-                                        movements.Add(movement);
+                                        cost /= 2;
                                     }
 
-                                    newTruck.RemoveNode(nodes[0], nodes.Count);
+                                    if (cost < movement.Cost)
+                                    {
+                                        movement.Cost = cost;
+                                        movement.NewPrevious = tmp;
+                                        movement.NewTruck = j;
+                                    }
+
+                                    newTruck.RemoveNode(nodes.ToArray());
 
                                     tmp++;
                                 } while (tmp != newTruck.Head);
                             }
 
+                            movements.Add(movement);
+
+                            // Put nodes back where they were
                             Rollback(truckIndex, previous, nodes.ToArray());
-
-                            movements.Sort();
-
-                            if (movements.Count > 0)
-                            {
-                                ApplyMovement(movements[0]);
-                            }
-                            //frm.Refresh();
                         }
                     }
+
+                    movements.Sort();
+
+                    if (movements.Count > 0 && movements[0].Cost < 0)
+                    {
+                        ApplyMovement(movements[0]);
+                    }
+
+                    frm.Refresh();
 
                     totalCost = TotalCost();
                 }
@@ -275,14 +278,14 @@ namespace CVRP_Viewer
             return sum;
         }
 
-        private void Rollback(int truck, Node previous, Node[] nodes)
+        public void Rollback(int truck, Node previous, Node[] nodes)
         {
             trucks[truck].AddNodeAfter(previous, nodes);
         }
 
-        private void ApplyMovement(Movement movement)
+        public void ApplyMovement(Movement movement)
         {
-            trucks[movement.OriginalTruck].RemoveNode(movement.Nodes[0], movement.NbNodes);
+            trucks[movement.OriginalTruck].RemoveNode(movement.Nodes);
 
             trucks[movement.NewTruck].AddNodeAfter(movement.NewPrevious, movement.Nodes);
         }
@@ -330,6 +333,24 @@ namespace CVRP_Viewer
 
         public void Paint(object sender, PaintEventArgs e)
         {
+            int size = 7;
+
+            for (int i = 0; i < NbClients; i++)
+            {
+                Node node = GetClient(i);
+
+                Rectangle rect = new Rectangle(node.DrawPos.X - size / 2, node.DrawPos.Y - size / 2, size, size);
+
+                if (i == DepotIndex)
+                {
+                    e.Graphics.FillEllipse(Brushes.Black, rect);
+                }
+                else
+                {
+                    e.Graphics.DrawEllipse(Pens.Black, rect);
+                }
+            }
+
             foreach (Truck truck in trucks)
             {
                 truck.Paint(sender, e);
