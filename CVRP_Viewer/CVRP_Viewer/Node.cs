@@ -1,4 +1,11 @@
-﻿using System;
+﻿/**
+ * Auteur       : Cirieco Stefano
+ * Version      : 1.0
+ * Date         : 25.05.2020
+ * Class        : IFA-P3B
+ * Description  : This class represents the clients and depot
+ */
+using System;
 
 namespace CVRP_Viewer
 {

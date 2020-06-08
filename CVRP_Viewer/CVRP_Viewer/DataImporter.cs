@@ -1,4 +1,11 @@
-﻿using System;
+﻿/**
+ * Auteur       : Cirieco Stefano
+ * Version      : 1.0
+ * Date         : 25.05.2020
+ * Class        : IFA-P3B
+ * Description  : This class parses .vrp/.dat files and stocks their data into a DepotManager
+ */
+using System;
 using System.IO;
 
 namespace CVRP_Viewer

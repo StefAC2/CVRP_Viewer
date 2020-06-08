@@ -1,4 +1,11 @@
-﻿using System.Drawing;
+﻿/**
+ * Auteur       : Cirieco Stefano
+ * Version      : 1.0
+ * Date         : 26.05.2020
+ * Class        : IFA-P3B
+ * Description  : This class represents a route for a truck that starts and ends at the Head
+ */
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace CVRP_Viewer
@@ -82,19 +89,6 @@ namespace CVRP_Viewer
             } while (node.Position != Head.Position);
 
             return totalCost;
-        }
-
-        public bool IsNodeInRoute(Node node)
-        {
-            for (Node n = Head.Next; n != Head; n++)
-            {
-                if (n == node)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public void Paint(object sender, PaintEventArgs e)

@@ -1,4 +1,11 @@
-﻿using System;
+﻿/**
+ * Auteur       : Cirieco Stefano
+ * Version      : 1.0
+ * Date         : 25.05.2020
+ * Class        : IFA-P3B
+ * Description  : This class assembles the clients, depot and trucks, and it solve the CVRP
+ */
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -15,7 +22,7 @@ namespace CVRP_Viewer
         public int DepotIndex;
         public int NbClients => Clients.Length;
 
-        public List<Truck> trucks;
+        public List<Truck> Trucks;
 
         // Constructor
         public DepotManager(int nbClients)
@@ -46,7 +53,7 @@ namespace CVRP_Viewer
         public void CreateRandomRoutes()
         {
             // Create list of trucks with a predetermined capacity
-            trucks = new List<Truck>(NbClients / 3);
+            Trucks = new List<Truck>(NbClients / 3);
 
             // Copy clients into a list so we can remove them once used
             List<Node> clients = new List<Node>(Clients);
@@ -56,13 +63,13 @@ namespace CVRP_Viewer
 
             Random rnd = new Random();
 
-            for (int i = 0; i < trucks.Capacity; i++)
+            for (int i = 0; i < Trucks.Capacity; i++)
             {
                 // Create truck with the depot as the head
                 Truck truck = new Truck(Depot, i);
 
                 // Calculate how many clients are going to be in the truck's initiale route
-                int clientsForTruck = clients.Count / (trucks.Capacity - trucks.Count);
+                int clientsForTruck = clients.Count / (Trucks.Capacity - Trucks.Count);
 
                 // Add clients to truck route and remove them from clients list
                 for (int j = 0; j < clientsForTruck; j++)
@@ -81,7 +88,7 @@ namespace CVRP_Viewer
                         }
                         else
                         {
-                            foreach (Truck t in trucks)
+                            foreach (Truck t in Trucks)
                             {
                                 if (t.CalcCapacity() + clients[randIndex].Demande <= Truck.Capacity)
                                 {
@@ -94,7 +101,7 @@ namespace CVRP_Viewer
                     }
                 }
 
-                trucks.Add(truck);
+                Trucks.Add(truck);
             }
         }
 
@@ -136,7 +143,7 @@ namespace CVRP_Viewer
 
                             // Find truck index of node
                             int truckIndex = FindTruck(nodes[0]);
-                            Truck currentTruck = trucks[truckIndex];
+                            Truck currentTruck = Trucks[truckIndex];
 
                             // Find the node that comes before the current one in the trucks route
                             Node previous = nodes[0].Previous;
@@ -156,9 +163,9 @@ namespace CVRP_Viewer
                                 Cost = int.MaxValue
                             };
 
-                            for (int j = 0; j < trucks.Count; j++)
+                            for (int j = 0; j < Trucks.Count; j++)
                             {
-                                Truck newTruck = trucks[j];
+                                Truck newTruck = Trucks[j];
 
                                 int truckCapacity = newTruck.CalcCapacity();
                                 int nodesDemande = nodes.Sum(x => x.Demande);
@@ -229,7 +236,7 @@ namespace CVRP_Viewer
 
             int counter = 1;
 
-            foreach (Truck truck in trucks)
+            foreach (Truck truck in Trucks)
             {
                 if (truck.Head == truck.Head.Next)
                 {
@@ -270,7 +277,7 @@ namespace CVRP_Viewer
         {
             int sum = 0;
 
-            foreach (Truck truck in trucks)
+            foreach (Truck truck in Trucks)
             {
                 sum += truck.CalcCost();
             }
@@ -280,19 +287,19 @@ namespace CVRP_Viewer
 
         public void Rollback(int truck, Node previous, Node[] nodes)
         {
-            trucks[truck].AddNodeAfter(previous, nodes);
+            Trucks[truck].AddNodeAfter(previous, nodes);
         }
 
         public void ApplyMovement(Movement movement)
         {
-            trucks[movement.OriginalTruck].RemoveNode(movement.Nodes);
+            Trucks[movement.OriginalTruck].RemoveNode(movement.Nodes);
 
-            trucks[movement.NewTruck].AddNodeAfter(movement.NewPrevious, movement.Nodes);
+            Trucks[movement.NewTruck].AddNodeAfter(movement.NewPrevious, movement.Nodes);
         }
 
         public void OptRoutes()
         {
-            trucks = new List<Truck>();
+            Trucks = new List<Truck>();
 
             List<int[]> locations = new List<int[]>();
 
@@ -325,7 +332,7 @@ namespace CVRP_Viewer
                     truck.AddNodeAfter(truck.Head, GetClient(tmp[i]));
                 }
 
-                trucks.Add(truck);
+                Trucks.Add(truck);
             }
 
             Console.WriteLine(ShowRoutes());
@@ -351,7 +358,7 @@ namespace CVRP_Viewer
                 }
             }
 
-            foreach (Truck truck in trucks)
+            foreach (Truck truck in Trucks)
             {
                 truck.Paint(sender, e);
             }

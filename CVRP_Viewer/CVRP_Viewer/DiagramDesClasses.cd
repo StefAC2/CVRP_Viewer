@@ -8,9 +8,9 @@
     </TypeIdentifier>
   </Class>
   <Class Name="CVRP_Viewer.DepotManager">
-    <Position X="4.75" Y="1.5" Width="1.5" />
+    <Position X="4.5" Y="0.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAEABAAAACAAAABAAAAAAAAAAAACAABAIAA=</HashCode>
+      <HashCode>AAAAAgAAAEEABAADgCAAAABIAEAAAAAAAAACBABIIAI=</HashCode>
       <FileName>DepotManager.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -31,22 +31,22 @@
   <Class Name="CVRP_Viewer.Movement">
     <Position X="7.25" Y="4.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAAAAAAAAAQAAAQAAAAAABEAAAAAAQAAAAAAAAEAABA=</HashCode>
+      <HashCode>gAAgAAAAAAAAAAQAAAAAABEAAAAAAQAAAAAAAAAAAAA=</HashCode>
       <FileName>Movement.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CVRP_Viewer.Node">
-    <Position X="1.75" Y="1.5" Width="1.75" />
+    <Position X="2.25" Y="1" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AgAAAAAAAAAACCAkQAEAIAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AgAAAAAAAAAACiAkQAEAIAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
       <FileName>Node.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CVRP_Viewer.Truck">
     <Position X="7" Y="0.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAgAAAAAAAAAIEEAAQAAAACCAAAAAAAAAAAAAAICAA=</HashCode>
+      <HashCode>AAAgAAAAAAAAAIEAAAQAAAACCAAAAAAAAAAAAAAICAA=</HashCode>
       <FileName>Truck.cs</FileName>
     </TypeIdentifier>
   </Class>

@@ -1,4 +1,11 @@
-﻿namespace CVRP_Viewer
+﻿/**
+ * Auteur       : Cirieco Stefano
+ * Version      : 1.0
+ * Date         : 25.05.2020
+ * Class        : IFA-P3B
+ * Description  : This class represents a 2D point with an X and Y coordinate
+ */
+namespace CVRP_Viewer
 {
     public class Location
     {

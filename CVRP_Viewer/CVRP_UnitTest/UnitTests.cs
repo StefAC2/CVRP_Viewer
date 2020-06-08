@@ -155,13 +155,13 @@ namespace CVRP_UnitTest
 
             Movement m = new Movement
             {
-                Nodes = new[] { dm.trucks[0].Head.Next },
+                Nodes = new[] { dm.Trucks[0].Head.Next },
                 OriginalTruck = 0
             };
 
             Node previous = m.Nodes[0].Previous;
 
-            dm.trucks[0].RemoveNode(m.Nodes);
+            dm.Trucks[0].RemoveNode(m.Nodes);
 
             dm.Rollback(m.OriginalTruck, previous, m.Nodes);
 
